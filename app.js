@@ -1,5 +1,7 @@
 const express = require("express");
 
+//Applay Middlewares
+
 const books = [
   {
     id: 1,
@@ -21,6 +23,7 @@ const books = [
 
 //Init App
 const app = express();
+app.use(express.json());
 
 //HTTP Methods
 
@@ -35,6 +38,19 @@ app.get("/api/books/:id", (req, res) => {
   } else {
     res.status(404).json({ message: "book not found" });
   }
+});
+
+app.post("/api/books", (req, res) => {
+  const book = {
+    id: books.length + 1,
+    title: req.body.title,
+    author: req.body.author,
+    description: req.body.description,
+    price: req.body.price,
+    cover: req.body.cover,
+  };
+  books.push(book);
+  res.status(201).json({ message: book });
 });
 
 // Running the server

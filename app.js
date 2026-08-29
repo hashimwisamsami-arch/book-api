@@ -1,4 +1,5 @@
 const express = require("express");
+const Joi = require("joi");
 
 //Applay Middlewares
 
@@ -41,6 +42,17 @@ app.get("/api/books/:id", (req, res) => {
 });
 
 app.post("/api/books", (req, res) => {
+  const schema = Joi.object({
+    title: Joi.string().trim().min(3).max(200).required(),
+    author: Joi.string().trim().min(3).max(200).required(),
+    description: Joi.string().trim().min(3).max(300).required(),
+    price: Joi.number().min(0).required(),
+    cover: Joi.string().trim().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.message });
+  }
   const book = {
     id: books.length + 1,
     title: req.body.title,

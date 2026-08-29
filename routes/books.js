@@ -72,6 +72,42 @@ router.post("/", (req, res) => {
   res.status(201).json({ message: book });
 });
 
+/**
+ * @desc Update book
+ * @route /api/books/:id
+ * @method PUT
+ * @access public
+ */
+
+router.put("/:id", (req, res) => {
+  const { error } = validateUpdateBook(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.message });
+  }
+  const book = books.find((b) => b.id === parseInt(req.params.id));
+  if (book) {
+    res.status(200).json({ message: "book has been updated" });
+  } else {
+    res.status(404).json({ message: "book not found" });
+  }
+});
+
+/**
+ * @desc Delete book
+ * @route /api/books/:id
+ * @method DELETE
+ * @access public
+ */
+
+router.delete("/:id", (req, res) => {
+  const book = books.find((b) => b.id === parseInt(req.params.id));
+  if (book) {
+    res.status(200).json({ message: "book has been deleted" });
+  } else {
+    res.status(404).json({ message: "book not found" });
+  }
+});
+
 function validateCreateBook(obj) {
   const schema = Joi.object({
     title: Joi.string().trim().min(3).max(200).required(),
@@ -79,6 +115,16 @@ function validateCreateBook(obj) {
     description: Joi.string().trim().min(3).max(300).required(),
     price: Joi.number().min(0).required(),
     cover: Joi.string().trim().required(),
+  });
+  return schema.validate(obj);
+}
+function validateUpdateBook(obj) {
+  const schema = Joi.object({
+    title: Joi.string().trim().min(3).max(200),
+    author: Joi.string().trim().min(3).max(200),
+    description: Joi.string().trim().min(3).max(300),
+    price: Joi.number().min(0),
+    cover: Joi.string().trim(),
   });
   return schema.validate(obj);
 }

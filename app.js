@@ -1,6 +1,14 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const booksPath = require("./routes/books");
 const authorsPath = require("./routes/authors");
+
+//Connection to DB
+mongoose
+  .connect("mongodb://localhost/BookApi")
+  .then(() => console.log("Connected To MongoDB..."))
+  .catch((error) => console.log("Connection failed to MongoDB!", error));
+
 //Init App
 const app = express();
 

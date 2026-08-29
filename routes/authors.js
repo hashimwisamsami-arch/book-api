@@ -111,7 +111,7 @@ function validateCreateAuthor(obj) {
     firstName: Joi.string().trim().min(3).max(200).required(),
     lastName: Joi.string().trim().min(3).max(200).required(),
     nationality: Joi.string().trim().min(3).max(50).required(),
-    image: Joi.string().trim().required(),
+    image: Joi.string().trim(),
   });
   return schema.validate(obj);
 }

@@ -1,25 +1,11 @@
 const express = require("express");
-const Joi = require("joi");
 
 const router = express.Router();
-const { Author } = require("../models/Author");
-
-const authors = [
-  {
-    id: 1,
-    firstName: "Jimmy",
-    lastName: "cool",
-    nationality: "USA",
-    image: "default-image.png",
-  },
-  {
-    id: 2,
-    firstName: "Kenny",
-    lastName: "MK",
-    nationality: "USA",
-    image: "default-image.png",
-  },
-];
+const {
+  Author,
+  validateCreateAuthor,
+  validateUpdateAuthor,
+} = require("../models/Author");
 
 //HTTP Methods
 
@@ -125,33 +111,19 @@ router.put("/:id", async (req, res) => {
  * @method DELETE
  * @access public
  */
-router.delete("/:id", (req, res) => {
-  const author = authors.find((a) => a.id === parseInt(req.params.id));
-  if (author) {
-    res.status(200).json({ message: "author is deleted" });
-  } else {
-    res.status(404).json({ message: "author not found" });
+router.delete("/:id", async (req, res) => {
+  try {
+    const author = await Author.findById(req.params.id);
+    if (author) {
+      await Author.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: "author is deleted" });
+    } else {
+      res.status(404).json({ message: "author not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong!!" });
   }
 });
-
-function validateCreateAuthor(obj) {
-  const schema = Joi.object({
-    firstName: Joi.string().trim().min(3).max(200).required(),
-    lastName: Joi.string().trim().min(3).max(200).required(),
-    nationality: Joi.string().trim().min(2).max(50).required(),
-    image: Joi.string().trim(),
-  });
-  return schema.validate(obj);
-}
-
-function validateUpdateAuthor(obj) {
-  const schema = Joi.object({
-    firstName: Joi.string().trim().min(3).max(200),
-    lastName: Joi.string().trim().min(3).max(200),
-    nationality: Joi.string().trim().min(2).max(50),
-    image: Joi.string().trim(),
-  });
-  return schema.validate(obj);
-}
 
 module.exports = router;

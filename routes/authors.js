@@ -94,16 +94,28 @@ router.post("/", async (req, res) => {
  * @access public
  */
 
-router.put("/:id", (req, res) => {
+router.put("/:id", async (req, res) => {
   const { error } = validateUpdateAuthor(req.body);
   if (error) {
     return res.status(400).json({ message: error.message });
   }
-  const author = authors.find((a) => a.id === parseInt(req.params.id));
-  if (author) {
-    res.status(200).json({ message: "author is updated" });
-  } else {
-    res.status(404).json({ message: "author not found" });
+  try {
+    const author = await Author.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          nationality: req.body.nationality,
+          image: req.body.image,
+        },
+      },
+      { new: true },
+    );
+    res.status(200).json({ author });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Something went wrong!!" });
   }
 });
 

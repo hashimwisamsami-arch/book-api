@@ -4,6 +4,7 @@ const booksPath = require("./routes/books");
 const authorsPath = require("./routes/authors");
 const dotenv = require("dotenv");
 const logger = require("./middlewares/logger");
+const { notFound, errorHandler } = require("./middlewares/errors");
 dotenv.config();
 
 //Connection to DB
@@ -22,6 +23,11 @@ app.use(logger);
 //Routes
 app.use("/api/books", booksPath);
 app.use("/api/authors", authorsPath);
+
+//Error Handler
+
+app.use(notFound);
+app.use(errorHandler);
 
 // Running the server
 const PORT = process.env.PORT || 5000;

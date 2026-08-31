@@ -40,4 +40,34 @@ router.post(
   }),
 );
 
+/**
+ * @desc Login user
+ * @route /api/auth/login
+ * @method POST
+ * @access public
+ */
+router.post(
+  "/login",
+  asyncHandler(async (req, res) => {
+    const { error } = validateLoginUser(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      res.status(400).json({ message: "inavlid email or password" });
+    }
+    const isPasswordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password,
+    );
+    if (!isPasswordMatch) {
+      res.status(400).json({ message: "inavlid email or password" });
+    }
+    const token = null;
+    const { password, ...other } = user._doc;
+    res.status(200).json({ ...other, token });
+  }),
+);
+
 module.exports = router;

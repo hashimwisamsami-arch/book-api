@@ -1,6 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const {
   User,
@@ -34,7 +35,11 @@ router.post(
       isAdmin: req.body.isAdmin,
     });
     const result = await user.save();
-    const token = null;
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "30d" },
+    );
     const { password, ...other } = result._doc;
     res.status(201).json({ ...other, token });
   }),
@@ -64,7 +69,11 @@ router.post(
     if (!isPasswordMatch) {
       res.status(400).json({ message: "inavlid email or password" });
     }
-    const token = null;
+    const token = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "30d" },
+    );
     const { password, ...other } = user._doc;
     res.status(200).json({ ...other, token });
   }),

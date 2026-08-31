@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const booksPath = require("./routes/books");
 const authorsPath = require("./routes/authors");
 const authPath = require("./routes/auth");
+const usersPath = require("./routes/users");
 const dotenv = require("dotenv");
 const logger = require("./middlewares/logger");
 const { notFound, errorHandler } = require("./middlewares/errors");
@@ -25,6 +26,7 @@ app.use(logger);
 app.use("/api/books", booksPath);
 app.use("/api/authors", authorsPath);
 app.use("/api/auth", authPath);
+app.use("/api/users", usersPath);
 
 //Error Handler
 

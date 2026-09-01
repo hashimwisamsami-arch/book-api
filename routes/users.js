@@ -1,23 +1,23 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
-const verifyToken = require("../middlewares/verifyToken");
+const {
+  verfiyTokenAndAuthorization,
+  verfiyTokenAndAdmin,
+} = require("../middlewares/verifyToken");
 const router = express.Router();
 const { User, validateUpdateUser } = require("../models/User");
 
 /**
- * @desc Update New user
+ * @desc Update user
  * @route /api/users/:id
  * @method PUT
  * @access private
  */
 router.put(
   "/:id",
-  verifyToken,
+  verfiyTokenAndAuthorization,
   asyncHandler(async (req, res) => {
-    if (req.user.id !== req.params.id) {
-      return res.status(403).json({ message: "you are not allowed to update" });
-    }
     const { error } = validateUpdateUser(req.body);
     if (error) {
       return res.status(400).json({ message: error.details[0].message });
@@ -38,6 +38,21 @@ router.put(
       { new: true },
     ).select("-password");
     res.status(200).json({ updateUser });
+  }),
+);
+
+/**
+ * @desc Get All users
+ * @route /api/users
+ * @method GET
+ * @access private
+ */
+router.get(
+  "/",
+  verfiyTokenAndAdmin,
+  asyncHandler(async (req, res) => {
+    const users = await User.find().select("-password");
+    res.status(200).json({ users });
   }),
 );
 

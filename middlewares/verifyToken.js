@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 
+//Verify Token
 function verifyToken(req, res, next) {
   const token = req.headers.token;
   if (token) {
@@ -14,4 +15,33 @@ function verifyToken(req, res, next) {
     res.status(401).json({ message: "no token provided" });
   }
 }
-module.exports = verifyToken;
+
+//Verify  & Authorized the user
+function verfiyTokenAndAuthorization(req, res, next) {
+  verifyToken(req, res, () => {
+    if (req.user.id === req.params.id || req.user.isAdmin) {
+      next();
+    } else {
+      return res.status(403).json({ message: "you are not allowed " });
+    }
+  });
+}
+
+//Verify  & Admin
+function verfiyTokenAndAdmin(req, res, next) {
+  verifyToken(req, res, () => {
+    if (req.user.isAdmin) {
+      next();
+    } else {
+      return res
+        .status(403)
+        .json({ message: "you are not allowed,only Admin " });
+    }
+  });
+}
+
+module.exports = {
+  verifyToken,
+  verfiyTokenAndAuthorization,
+  verfiyTokenAndAdmin,
+};

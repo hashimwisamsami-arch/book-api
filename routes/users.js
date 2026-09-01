@@ -12,7 +12,7 @@ const { User, validateUpdateUser } = require("../models/User");
  * @desc Update user
  * @route /api/users/:id
  * @method PUT
- * @access private
+ * @access private (only user hislef)
  */
 router.put(
   "/:id",
@@ -45,7 +45,7 @@ router.put(
  * @desc Get All users
  * @route /api/users
  * @method GET
- * @access private
+ * @access private (only admin)
  */
 router.get(
   "/",
@@ -53,6 +53,43 @@ router.get(
   asyncHandler(async (req, res) => {
     const users = await User.find().select("-password");
     res.status(200).json({ users });
+  }),
+);
+
+/**
+ * @desc Get User By id
+ * @route /api/users/:id
+ * @method GET
+ * @access private (only admin and user himself)
+ */
+router.get(
+  "/:id",
+  verfiyTokenAndAuthorization,
+  asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password");
+    if (user) {
+      res.status(200).json({ user });
+    }
+    res.status(404).json({ message: "user not found" });
+  }),
+);
+
+/**
+ * @desc Delete User By id
+ * @route /api/users/:id
+ * @method DELETE
+ * @access private (only admin and user himself)
+ */
+router.delete(
+  "/:id",
+  verfiyTokenAndAuthorization,
+  asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id).select("-password");
+    if (user) {
+      await User.findByIdAndDelete(req.params.id);
+      res.status(200).json({ message: "user deleted" });
+    }
+    res.status(404).json({ message: "user not found" });
   }),
 );
 

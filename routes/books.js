@@ -1,6 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const router = express.Router();
+const { verfiyTokenAndAdmin } = require("../middlewares/verifyToken");
 const {
   Book,
   validateCreateBook,
@@ -53,10 +54,11 @@ router.get(
  * @desc Create book
  * @route /api/books
  * @method POST
- * @access public
+ * @access private (only admin)
  */
 router.post(
   "/",
+  verfiyTokenAndAdmin,
   asyncHandler(async (req, res) => {
     const { error } = validateCreateBook(req.body);
     if (error) {
@@ -78,11 +80,12 @@ router.post(
  * @desc Update book
  * @route /api/books/:id
  * @method PUT
- * @access public
+ * @access private (only admin)
  */
 
 router.put(
   "/:id",
+  verfiyTokenAndAdmin,
   asyncHandler(async (req, res) => {
     const { error } = validateUpdateBook(req.body);
     if (error) {
@@ -110,11 +113,12 @@ router.put(
  * @desc Delete book
  * @route /api/books/:id
  * @method DELETE
- * @access public
+ * @access private (only admin)
  */
 
 router.delete(
   "/:id",
+  verfiyTokenAndAdmin,
   asyncHandler(async (req, res) => {
     const book = await Book.findById(req.params.id);
     if (book) {

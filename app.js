@@ -2,6 +2,8 @@ const express = require("express");
 const connectToDB = require("./config/db");
 require("dotenv").config();
 const path = require("path");
+const helmet = require("helmet");
+const cors = require("cors");
 
 const logger = require("./middlewares/logger");
 const { notFound, errorHandler } = require("./middlewares/errors");
@@ -19,6 +21,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger);
 
+//Helmet and cors
+app.use(helmet());
+app.use(cors());
+
+//Set View engine
 app.set("view engine", "ejs");
 
 //Routes

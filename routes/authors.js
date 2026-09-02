@@ -19,7 +19,11 @@ const {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    const authorList = await Author.find();
+    const { pageNumber } = req.query;
+    const authorPerPage = 2;
+    const authorList = await Author.find()
+      .skip((pageNumber - 1) * authorPerPage)
+      .limit(authorPerPage);
     res.status(200).json(authorList);
   }),
 );
